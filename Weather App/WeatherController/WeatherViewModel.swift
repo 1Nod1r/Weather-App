@@ -9,25 +9,13 @@ import Foundation
 
 class WeatherViewModel {
     var didChange: (() -> Void)?
-    var weather: WeatherData?
-    private var list: [List] = [] {
+    var weather: WeatherData? {
         didSet {
             didChange?()
         }
     }
     var query: String?
-    
-    func getList(){
-        ApiCaller.shared.getList(query: "london") { result in
-            switch result {
-            case .success(let list):
-                self.list = list
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-    
+
     func getWeather(){
         ApiCaller.shared.getData(query: "london") { result in
             switch result {
@@ -40,11 +28,14 @@ class WeatherViewModel {
     }
     
     func numberOfRows() -> Int {
-        return list.count
+        return weather?.list.count ?? 0
     }
     
-    func item(for index: Int) -> List{
-        return list[index]
+    func item(for index: Int) -> List? {
+        guard let weather = weather else {
+            return nil
+        }
+        return weather.list[index]
     }
     
 }

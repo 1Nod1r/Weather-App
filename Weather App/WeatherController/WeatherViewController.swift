@@ -38,10 +38,6 @@ class WeatherViewController: UIViewController {
             }
         }
     }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,7 +58,6 @@ class WeatherViewController: UIViewController {
         viewModel = WeatherViewModel()
         setupBinding()
         viewModel?.getWeather()
-        viewModel?.getList()
         view.backgroundColor = .systemBackground
         tableView.delegate = self
         tableView.dataSource = self
