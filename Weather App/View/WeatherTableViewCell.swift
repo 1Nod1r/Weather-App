@@ -61,7 +61,7 @@ class WeatherTableViewCell: UITableViewCell {
     private func dateFormatter(date: Int) -> String {
         let date = NSDate(timeIntervalSince1970: TimeInterval(date))
         let df = DateFormatter()
-        df.dateFormat = "MM/dd/yyyy"
+        df.dateFormat = "MMM d"
         df.locale = Locale(identifier: "en_US_POSIX")
         df.timeZone = .current
         let now = df.string(from: date as Date)

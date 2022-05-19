@@ -10,23 +10,18 @@ import CoreLocation
 
 class WeatherViewController: UIViewController {
     var viewModel: WeatherViewModel?
+    let headerView = HeaderView(frame: .zero)
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.clipsToBounds = true
-        imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleToFill
-        imageView.image = UIImage(named: "image")
-        return imageView
-    }()
-    
-    private let headerView: UIView = {
-        let view = UIView()
-        return view
+    private let searchController: UISearchController = {
+        let search = UISearchController()
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = "Type a city name..."
+        return search
     }()
     
     private let tableView: UITableView = {
-        let tableView = UITableView()
+        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.backgroundColor = UIColor(red: 168/255, green: 230/255, blue: 238/255, alpha: 1)
         tableView.register(WeatherTableViewCell.self, forCellReuseIdentifier: WeatherTableViewCell.id)
         return tableView
     }()
@@ -41,6 +36,8 @@ class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.searchController = searchController
+        searchController.searchBar.delegate = self
         configure()
     }
     
@@ -50,11 +47,17 @@ class WeatherViewController: UIViewController {
         tableView.frame = view.bounds
         tableView.tableHeaderView = headerView
         headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 300)
-        headerView.addSubview(imageView)
-        imageView.frame = headerView.bounds
     }
     
-    func configure(){
+    private func configureHeaderView(){
+        guard let name = viewModel?.weather?.name,
+              let temperature = viewModel?.weather?.list[0].temp.average else {
+            return
+        }
+        headerView.configure(viewModel: HeaderViewModel(cityName: name, temperature: "\(temperature)℃"))
+    }
+    
+    private func configure(){
         viewModel = WeatherViewModel()
         setupBinding()
         viewModel?.getWeather()
@@ -76,10 +79,23 @@ extension WeatherViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: WeatherTableViewCell.id, for: indexPath) as! WeatherTableViewCell
         guard let weather = viewModel?.weather, let list = viewModel?.item(for: indexPath.row) else { return UITableViewCell() }
         cell.configure(with: weather, list: list)
+        configureHeaderView()
+        cell.backgroundColor = UIColor(red: 168/255, green: 230/255, blue: 238/255, alpha: 1)
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension WeatherViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard searchBar.text != nil else {
+            return
+        }
+        viewModel?.query = searchBar.text
+        viewModel?.getWeather()
+        searchBar.text = ""
     }
 }

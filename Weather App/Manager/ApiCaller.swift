@@ -11,7 +11,12 @@ final class ApiCaller {
     
     static let shared = ApiCaller()
     
-    func getData(query: String, completion: @escaping (Result<WeatherData, Error>) -> Void){
+    private init(){}
+    
+    typealias WeatherCompletion = ((Result<WeatherData, Error>) -> Void)
+    
+    func getData(query: String, completion: @escaping WeatherCompletion){
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else { return }
         let headers = [
             "X-RapidAPI-Host": "community-open-weather-map.p.rapidapi.com",
             "X-RapidAPI-Key": "b64c665322mshb98ae43d28570a4p1837dfjsna04b9476fea8"

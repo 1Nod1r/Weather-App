@@ -9,15 +9,15 @@ import Foundation
 
 class WeatherViewModel {
     var didChange: (() -> Void)?
+    var query: String? 
     var weather: WeatherData? {
         didSet {
             didChange?()
         }
     }
-    var query: String?
 
     func getWeather(){
-        ApiCaller.shared.getData(query: "london") { result in
+        ApiCaller.shared.getData(query: query ?? "Tashkent") { result in
             switch result {
             case .success(let weather):
                 self.weather = weather
