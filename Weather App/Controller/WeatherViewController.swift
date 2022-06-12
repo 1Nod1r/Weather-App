@@ -28,8 +28,8 @@ class WeatherViewController: UIViewController {
 
     func setupBinding(){
         viewModel?.didChange = {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
+            DispatchQueue.main.async {[weak self] in
+                self?.tableView.reloadData()
             }
         }
     }
@@ -46,7 +46,7 @@ class WeatherViewController: UIViewController {
         view.addSubview(tableView)
         tableView.frame = view.bounds
         tableView.tableHeaderView = headerView
-        headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 300)
+        headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.width)
     }
     
     private func configureHeaderView(){
@@ -65,7 +65,6 @@ class WeatherViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
     }
-
 
 }
 

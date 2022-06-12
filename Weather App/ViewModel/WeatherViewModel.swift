@@ -17,7 +17,8 @@ class WeatherViewModel {
     }
 
     func getWeather(){
-        ApiCaller.shared.getData(query: query ?? "Tashkent") { result in
+        ApiCaller.shared.getData(query: query ?? "Tashkent") {[weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let weather):
                 self.weather = weather
